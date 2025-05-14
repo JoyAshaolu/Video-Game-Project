@@ -1,0 +1,127 @@
+using UnityEngine;
+
+public class Player_Movements : MonoBehaviour
+{
+ public float speed = 8f;
+public float jumpingpower = 16f;
+public float Horizontal;
+public bool isFacingRight = true;
+
+[SerializeField] public Rigidbody2D rb;
+[SerializeField] public Transform groundCheck;
+[SerializeField] public LayerMask groundlayer;
+    // Update is called once per frame
+    void Update()
+    {
+        horizontal  = input.getAxis("Horizontal");
+
+        if(Input.GetButtonDown("Jump") && IsGrounded())
+        {
+          rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+        }
+
+        if(Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
+        {
+          rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+        }
+
+        Flip();
+    }
+
+public void FixedUpdate()
+    {
+       rb.velocity = new Vector2(horizontal * speed, rb.velocity.y)
+    }
+
+    public bool IsGrounded()
+    {
+      return Physics2D.OverlapCircle(groundCheck.Position,0.2f, groundLayer);
+    }
+      
+
+      private void Flip()
+      {
+        if (isFacingRight && horizontal <0f || !isFacingRight && horizontal > 0f)
+        {
+          isFacingRight = ifFacingRight;
+          Vector3 localScale = transform.localScale;
+          localScale.x *= -if;
+          transform.localScale = localScale;
+        }
+      }
+}
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerController : MonoBehaviour
+{
+    public float speed = 5f;
+    public float jumpSpeed = 8f;
+    private float direction = 0f;
+    private Rigidbody2D player;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        player = GetComponent<Rigidbody2D>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        direction = Input.GetAxis("Horizontal");
+
+        if (direction > 0f)
+        {
+            player.velocity = new Vector2(direction * speed, player.velocity.y);
+        }
+        else if (direction < 0f)
+        {
+            player.velocity = new Vector2(direction * speed, player.velocity.y);
+        }
+        else
+        {
+            player.velocity = new Vector2(0, player.velocity.y);
+        }
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            player.velocity = new Vector2(player.velocity.x, jumpSpeed);
+        }
+    }
+}
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraController : MonoBehaviour
+{
+    public GameObject player;
+    public float offset;
+    public float offsetSmoothing;
+    private Vector3 playerPosition;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        playerPosition = new Vector3(player.transform.position.x, transform.position.y, transform.position.z);
+
+        if(player.transform.localScale.x > 0f)
+        {
+            playerPosition = new Vector3(playerPosition.x + offset, playerPosition.y, playerPosition.z);
+        }
+        else
+        {
+            playerPosition = new Vector3(playerPosition.x - offset, playerPosition.y, playerPosition.z);
+        }
+
+        transform.position = Vector3.Lerp(transform.position, playerPosition, offsetSmoothing * Time.deltaTime);
+    }
+}
